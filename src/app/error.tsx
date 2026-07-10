@@ -24,13 +24,13 @@ export default function Error({
       <div className="flex gap-4">
         <button
           onClick={() => reset()}
-          className="px-6 py-3 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 transition-colors"
+          className="cursor-pointer px-6 py-3 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 transition-colors cursor-pointer"
         >
           Try again
         </button>
         <Link
           href="/"
-          className="px-6 py-3 bg-gray-200 text-gray-900 rounded-md font-medium hover:bg-gray-300 transition-colors"
+          className="px-6 py-3 bg-gray-200 text-gray-900 rounded-md font-medium hover:bg-gray-300 transition-colors cursor-pointer"
         >
           Go back home
         </Link>
