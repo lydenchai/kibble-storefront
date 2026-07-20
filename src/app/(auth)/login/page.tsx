@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
 import { EyeOff, Eye } from "lucide-react";
-import { apiClient } from "@/lib/apiClient";
+import { loginAction, registerAction } from "@/actions/auth.actions";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,10 +23,7 @@ export default function LoginPage() {
 
     try {
       if (isLogin) {
-        const response = await apiClient.post("/auth/login", {
-          email,
-          password,
-        });
+        const response = await loginAction({ email, password });
         if (response && response.data) {
           const { user, accessToken } = response.data;
           login(user, accessToken);
@@ -37,13 +34,10 @@ export default function LoginPage() {
         }
       } else {
         // Register first
-        await apiClient.post("/auth/register", { name, email, password });
+        await registerAction({ name, email, password });
 
         // Then automatically login to get the access token
-        const loginResponse = await apiClient.post("/auth/login", {
-          email,
-          password,
-        });
+        const loginResponse = await loginAction({ email, password });
         if (loginResponse && loginResponse.data) {
           const { user, accessToken } = loginResponse.data;
           login(user, accessToken);

@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -48,11 +46,7 @@ export default function RootLayout({
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white focus:text-black">
           Skip to main content
         </a>
-        <Header />
-        <main id="main-content" className="flex-1 bg-gray-50">
-          {children}
-        </main>
-        <Footer />
+        {children}
       </body>
     </html>
   );

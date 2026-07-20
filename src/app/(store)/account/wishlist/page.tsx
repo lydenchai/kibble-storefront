@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, Trash2, ShoppingCart, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
-import { apiClient } from '@/lib/apiClient';
+import { fetchWishlistAction, toggleWishlistAction } from '@/actions/account.actions';
 import AccountSidebar from '@/components/account/AccountSidebar';
 
 interface WishlistProduct {
@@ -39,8 +39,9 @@ export default function WishlistPage() {
       setLoading(true);
       setError('');
       try {
-        const res = await apiClient.get('/auth/wishlist') as any;
-        setItems(res.data.wishlist || []);
+        const token = localStorage.getItem('accessToken');
+        const res = await fetchWishlistAction(token);
+        setItems(res.data?.wishlist || []);
       } catch {
         setError('Failed to load wishlist.');
       } finally {
@@ -53,9 +54,10 @@ export default function WishlistPage() {
   const handleRemove = async (productId: string) => {
     setRemoving(productId);
     try {
-      const res = await apiClient.post(`/auth/wishlist/${productId}`, {}) as any;
+      const token = localStorage.getItem('accessToken');
+      const res = await toggleWishlistAction(productId, token);
       // Server returns updated wishlist array of IDs — re-filter locally
-      const updatedIds: string[] = res.data.wishlist;
+      const updatedIds: string[] = res.data?.wishlist || [];
       setItems((prev) => prev.filter((p) => updatedIds.includes(p._id)));
     } catch {
       // silent

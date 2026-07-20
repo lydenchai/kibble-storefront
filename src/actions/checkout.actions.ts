@@ -4,7 +4,7 @@ import { CartItem } from "@/store/useCartStore";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-export async function createPaymentIntentAction(items: CartItem[], token: string | null, shippingAddress: any) {
+export async function createOrderAction(items: CartItem[], token: string | null, shippingAddress: any) {
   if (!token) {
     throw new Error('You must be logged in to checkout');
   }
@@ -21,7 +21,8 @@ export async function createPaymentIntentAction(items: CartItem[], token: string
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'X-App-Type': 'storefront'
       },
       body: JSON.stringify({
         items: requestItems,
@@ -31,13 +32,13 @@ export async function createPaymentIntentAction(items: CartItem[], token: string
 
     if (!res.ok) {
       const error = await res.json();
-      throw new Error(error.error?.message || 'Failed to create payment intent');
+      throw new Error(error.error?.message || 'Failed to create order');
     }
 
     const data = await res.json();
-    return data.data; // Should contain { clientSecret, orderId }
+    return data.data; // Should contain { orderId }
   } catch (error: any) {
-    console.error("Failed to create payment intent:", error);
+    console.error("Failed to create order:", error);
     throw error;
   }
 }

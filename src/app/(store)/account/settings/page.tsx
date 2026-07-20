@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, AlertCircle, User, Phone, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
-import { apiClient } from '@/lib/apiClient';
+import { updateProfileAction } from '@/actions/account.actions';
 import AccountSidebar from '@/components/account/AccountSidebar';
 
 type SaveState = 'idle' | 'loading' | 'success' | 'error';
@@ -44,11 +44,11 @@ export default function SettingsPage() {
     setProfileSave('loading');
     setProfileError('');
     try {
-      const res = await apiClient.put('/auth/profile', { name, phone }) as any;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : '';
+      const res = await updateProfileAction({ name, phone }, token);
       // Update the auth store with the new name
       if (user) {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : '';
-        login({ ...user, name: res.data.user.name }, token || '');
+        login({ ...user, name: res.user.name }, token || '');
       }
       setProfileSave('success');
       setTimeout(() => setProfileSave('idle'), 3000);
@@ -71,7 +71,8 @@ export default function SettingsPage() {
     }
     setPasswordSave('loading');
     try {
-      await apiClient.put('/auth/profile', { currentPassword, newPassword });
+      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : '';
+      await updateProfileAction({ currentPassword, newPassword }, token);
       setPasswordSave('success');
       setCurrentPassword('');
       setNewPassword('');

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Package, ChevronRight, Clock, CheckCircle, Truck, XCircle, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
-import { apiClient } from '@/lib/apiClient';
+import { fetchUserOrdersAction } from '@/actions/account.actions';
 import AccountSidebar from '@/components/account/AccountSidebar';
 
 interface OrderItem {
@@ -62,10 +62,11 @@ export default function OrdersPage() {
       setLoading(true);
       setError('');
       try {
-        const res = await apiClient.get(`/orders/my?page=${page}&limit=8`) as any;
-        setOrders(res.data);
-        setTotalPages(res.pagination.pages);
-        setTotal(res.pagination.total);
+        const token = localStorage.getItem('accessToken');
+        const res = await fetchUserOrdersAction(page, 8, token);
+        setOrders(res.data || []);
+        setTotalPages(res.pagination?.pages || 1);
+        setTotal(res.pagination?.total || 0);
       } catch {
         setError('Failed to load orders. Please try again.');
       } finally {

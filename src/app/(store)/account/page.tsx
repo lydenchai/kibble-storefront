@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Package, Heart } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useState } from "react";
-import { apiClient } from "@/lib/apiClient";
+import { fetchUserOrdersAction, fetchWishlistAction } from "@/actions/account.actions";
 import AccountSidebar from "@/components/account/AccountSidebar";
 
 export default function AccountDashboard() {
@@ -29,14 +29,15 @@ export default function AccountDashboard() {
 
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem("accessToken");
         const [ordersRes, wishlistRes] = await Promise.all([
-          apiClient.get('/orders/my?limit=5') as any,
-          apiClient.get('/auth/wishlist') as any
+          fetchUserOrdersAction(1, 5, token),
+          fetchWishlistAction(token)
         ]);
         setStats({
-          totalOrders: ordersRes.pagination.total,
-          recentOrders: ordersRes.data,
-          savedItems: wishlistRes.data.wishlist.length
+          totalOrders: ordersRes.pagination?.total || 0,
+          recentOrders: ordersRes.data || [],
+          savedItems: wishlistRes.data?.wishlist?.length || 0
         });
       } catch (error) {
         console.error("Failed to fetch account data", error);

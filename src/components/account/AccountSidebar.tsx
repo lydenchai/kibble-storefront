@@ -34,7 +34,7 @@ export default function AccountSidebar() {
           </div>
           <div className="flex flex-col min-w-0">
             <h2 className="font-bold text-gray-900 truncate">{user.name}</h2>
-            <p className="text-sm text-gray-600 truncate">{user.email}</p>
+            <p className="text-sm text-gray-600 truncate" title={user.email}>{user.email}</p>
           </div>
         </div>
 

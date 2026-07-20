@@ -6,18 +6,12 @@ import { useCartStore } from '@/store/useCartStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import Link from 'next/link';
 import Image from 'next/image';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
-import { createPaymentIntentAction } from '@/actions/checkout.actions';
-import CheckoutForm from '@/components/checkout/CheckoutForm';
-
-// Load Stripe (ensure env var exists)
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_mock');
+import { createOrderAction } from '@/actions/checkout.actions';
+import ABAQRCode from '@/components/checkout/ABAQRCode';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [clientSecret, setClientSecret] = useState('');
   const [orderId, setOrderId] = useState('');
   const [error, setError] = useState('');
   const [isInitializing, setIsInitializing] = useState(false);
@@ -33,7 +27,7 @@ export default function CheckoutPage() {
     country: 'Cambodia'
   });
   
-  const { items, getTotalPrice } = useCartStore();
+  const { items, getTotalPrice, clearCart } = useCartStore();
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 
   useEffect(() => {
@@ -55,14 +49,13 @@ export default function CheckoutPage() {
     
     try {
       const token = localStorage.getItem('accessToken');
-      const data = await createPaymentIntentAction(items, token, {
+      const data = await createOrderAction(items, token, {
         ...address,
         isDefault: false
       });
-      setClientSecret(data.clientSecret);
       setOrderId(data.orderId);
     } catch (err: any) {
-      console.error("Payment intent creation error:", err);
+      console.error("Order creation error:", err);
       setError(err.message || "Failed to initialize checkout. Please try again.");
     } finally {
       setIsInitializing(false);
@@ -91,8 +84,7 @@ export default function CheckoutPage() {
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold text-brand-600">Kibble Checkout</Link>
-          <div className="text-sm font-medium transition-colors cursor-pointer">Secure Payment powered by{" "}
-            <a href="https://stripe.com/" target="_blank" className="text-brand-600 font-bold hover:underline">Stripe</a></div>
+          <div className="text-sm font-medium transition-colors">Secure Payment via ABA QR</div>
         </div>
       </div>
 
@@ -103,13 +95,20 @@ export default function CheckoutPage() {
             {error && (
                <div className="mb-6 p-4 rounded-lg bg-red-50 text-red-600 border border-red-200">
                  {error}
+                 {error.includes('stale items') && (
+                   <button 
+                     type="button"
+                     onClick={() => { clearCart(); router.push('/products'); }} 
+                     className="ml-2 underline font-bold"
+                   >
+                     Clear Cart & Return to Shop
+                   </button>
+                 )}
                </div>
             )}
             
-            {clientSecret ? (
-              <Elements options={{ clientSecret, appearance: { theme: 'stripe', variables: { colorPrimary: '#f97316' } } }} stripe={stripePromise}>
-                <CheckoutForm clientSecret={clientSecret} orderId={orderId} />
-              </Elements>
+            {orderId ? (
+              <ABAQRCode orderId={orderId} total={total} />
             ) : (
               <form onSubmit={handleAddressSubmit} className="bg-white/60 p-8 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50">
                 <h2 className="text-xl font-bold text-gray-900 mb-6">Shipping Address</h2>

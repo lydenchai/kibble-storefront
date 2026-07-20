@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { logoutAction } from '../actions/auth.actions';
 
 interface User {
   id: string;
@@ -20,20 +21,13 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isAuthenticated: false,
       login: (user, token) => {
-        // Normally we'd store the token in cookies or localStorage for apiClient
         if (typeof window !== 'undefined') {
           localStorage.setItem('accessToken', token);
         }
         set({ user, isAuthenticated: true });
       },
       logout: async () => {
-        try {
-          // Send logout request to backend to clear the httpOnly refresh token cookie
-          const { apiClient } = require('@/lib/apiClient');
-          await apiClient.post('/auth/logout', {});
-        } catch (error) {
-          console.error('Failed to logout from backend', error);
-        }
+        await logoutAction();
 
         if (typeof window !== 'undefined') {
           localStorage.removeItem('accessToken');
