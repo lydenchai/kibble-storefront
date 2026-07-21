@@ -9,19 +9,21 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { fetchUserOrderByIdAction } from '@/actions/account.actions';
 import AccountSidebar from '@/components/account/AccountSidebar';
 import { Order } from '@/types/order';
+import { useTranslation } from '@/hooks/useTranslation';
 
-const statusConfig: Record<Order['status'], { label: string; color: string; icon: React.ElementType }> = {
-  pending:    { label: 'Pending',    color: 'bg-gray-50 text-gray-600', icon: Clock },
-  processing: { label: 'Processing', color: 'bg-gray-100 text-gray-800', icon: AlertCircle },
-  shipped:    { label: 'Shipped',    color: 'bg-gray-200 text-gray-900', icon: Truck },
-  delivered:  { label: 'Delivered',  color: 'bg-black text-white',       icon: CheckCircle },
-  cancelled:  { label: 'Cancelled',  color: 'bg-gray-50 text-gray-400 line-through', icon: XCircle },
+const statusConfig: Record<Order['status'], { labelKey: string; color: string; icon: React.ElementType }> = {
+  pending:    { labelKey: 'orders.pending',    color: 'bg-gray-50 text-gray-600', icon: Clock },
+  processing: { labelKey: 'orders.processing', color: 'bg-gray-100 text-gray-800', icon: AlertCircle },
+  shipped:    { labelKey: 'orders.shipped',    color: 'bg-gray-200 text-gray-900', icon: Truck },
+  delivered:  { labelKey: 'orders.delivered',  color: 'bg-black text-white',       icon: CheckCircle },
+  cancelled:  { labelKey: 'orders.cancelled',  color: 'bg-gray-50 text-gray-400 line-through', icon: XCircle },
 };
 
 export default function OrderDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const { user } = useAuthStore();
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,9 +77,9 @@ export default function OrderDetailsPage() {
           <div className="mb-6">
             <Link href="/account/orders" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-brand-600 transition-colors mb-4">
               <ArrowLeft className="h-4 w-4" />
-              Back to Orders
+              {t('orders.backToOrders')}
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900">Order Details</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('orders.orderDetails')}</h1>
           </div>
 
           {loading ? (
@@ -154,9 +156,9 @@ export default function OrderDetailsPage() {
               {/* Header */}
               <div className="px-6 py-5 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">Order #{order._id.slice(-8).toUpperCase()}</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">{t('orders.orderId')} #{order._id.slice(-8).toUpperCase()}</h2>
                   <p className="text-sm text-gray-500 mt-1">
-                    Placed on {new Date(order.createdAt).toLocaleDateString('en-US', {
+                    {t('orders.placed')} {new Date(order.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                     })}
                   </p>
@@ -167,7 +169,7 @@ export default function OrderDetailsPage() {
                   return (
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${status.color}`}>
                       <StatusIcon className="h-3.5 w-3.5" />
-                      {status.label}
+                      {t(status.labelKey)}
                     </span>
                   );
                 })()}
@@ -183,7 +185,7 @@ export default function OrderDetailsPage() {
                       : 'border-transparent text-gray-500 hover:text-gray-900'
                   }`}
                 >
-                  Order Details
+                  {t('orders.orderDetails')}
                 </button>
                 <button
                   onClick={() => setActiveTab('tracking')}
@@ -193,7 +195,7 @@ export default function OrderDetailsPage() {
                       : 'border-transparent text-gray-500 hover:text-gray-900'
                   }`}
                 >
-                  Tracking
+                  {t('orders.tracking')}
                 </button>
               </div>
 
@@ -201,7 +203,7 @@ export default function OrderDetailsPage() {
                 <>
                   {/* Items */}
               <div className="px-6 py-6 border-b border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Items</h3>
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">{t('orders.items')}</h3>
                 <div className="space-y-4">
                   {order.items.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-4">
@@ -224,7 +226,7 @@ export default function OrderDetailsPage() {
                             {item.name}
                           </span>
                         )}
-                        <p className="text-sm text-gray-500 mt-0.5">Qty: {item.quantity}</p>
+                        <p className="text-sm text-gray-500 mt-0.5">{t('orders.qty')}: {item.quantity}</p>
                       </div>
                       <div className="text-sm font-medium text-gray-900">
                         ${(item.price * item.quantity).toFixed(2)}
@@ -237,7 +239,7 @@ export default function OrderDetailsPage() {
               {/* Summary & Addresses */}
               <div className="px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-gray-50">
                 <div>
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Shipping Address</h3>
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">{t('orders.shippingAddress')}</h3>
                   <div className="text-sm text-gray-900 space-y-1">
                     <p>
                       {[
@@ -253,28 +255,28 @@ export default function OrderDetailsPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Order Summary</h3>
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">{t('orders.summary')}</h3>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between text-gray-500">
-                      <span>Subtotal</span>
+                      <span>{t('orders.subtotal')}</span>
                       <span className="text-gray-900">${order.subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-gray-500">
-                      <span>Shipping</span>
+                      <span>{t('orders.shipping')}</span>
                       <span className="text-gray-900">${order.shipping.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-gray-500">
-                      <span>Tax</span>
+                      <span>{t('orders.tax')}</span>
                       <span className="text-gray-900">${order.tax.toFixed(2)}</span>
                     </div>
                     {order.discount > 0 && (
                       <div className="flex justify-between text-gray-900">
-                        <span>Discount</span>
+                        <span>{t('orders.discount')}</span>
                         <span>-${order.discount.toFixed(2)}</span>
                       </div>
                     )}
                     <div className="pt-4 mt-2 border-t border-gray-100 flex justify-between items-center">
-                      <span className="font-semibold text-gray-900">Total</span>
+                      <span className="font-semibold text-gray-900">{t('orders.total')}</span>
                       <span className="font-semibold text-lg text-gray-900">${order.total.toFixed(2)}</span>
                     </div>
                   </div>
@@ -285,17 +287,17 @@ export default function OrderDetailsPage() {
                 <div className="px-6 py-8">
                   <div className="max-w-2xl">
                     <div className="flex items-center justify-between mb-8">
-                      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Tracking History</h3>
+                      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">{t('orders.trackingHistory')}</h3>
                       {order.trackingNumber && (
                         <div className="text-right">
-                          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Tracking Details</p>
+                          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">{t('orders.trackingDetails')}</p>
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-gray-900">{order.courier || 'Courier'}</span>
                             <span className="text-gray-300">•</span>
                             <span className="text-sm font-mono text-gray-600">{order.trackingNumber}</span>
                             {order.trackingUrl && (
                               <Link href={order.trackingUrl} target="_blank" className="ml-2 text-brand-600 hover:text-brand-700 text-sm font-medium">
-                                Track
+                                {t('orders.track')}
                               </Link>
                             )}
                           </div>
@@ -308,8 +310,8 @@ export default function OrderDetailsPage() {
                         <div className="absolute w-8 h-8 -left-[56.5px] flex items-center justify-center rounded-full bg-black text-white ring-8 ring-white">
                           <Clock className="h-3.5 w-3.5" />
                         </div>
-                        <h4 className="text-sm font-semibold text-gray-900">Order Placed</h4>
-                        <p className="text-sm text-gray-500 mt-1">We have received your order.</p>
+                        <h4 className="text-sm font-semibold text-gray-900">{t('orders.orderPlaced')}</h4>
+                        <p className="text-sm text-gray-500 mt-1">{t('orders.receivedOrder')}</p>
                       </div>
 
                       {/* Processing Step */}
@@ -321,9 +323,9 @@ export default function OrderDetailsPage() {
                         }`}>
                           <Package className="h-3.5 w-3.5" />
                         </div>
-                        <h4 className={`text-sm font-semibold ${['processing', 'shipped', 'delivered'].includes(order.status) ? 'text-gray-900' : 'text-gray-400'}`}>Processing</h4>
+                        <h4 className={`text-sm font-semibold ${['processing', 'shipped', 'delivered'].includes(order.status) ? 'text-gray-900' : 'text-gray-400'}`}>{t('orders.processing')}</h4>
                         <p className={`text-sm mt-1 transition-colors ${['processing', 'shipped', 'delivered'].includes(order.status) ? 'text-gray-500' : 'text-gray-400'}`}>
-                          {['processing', 'shipped', 'delivered'].includes(order.status) ? 'We are preparing your order.' : 'Pending processing'}
+                          {['processing', 'shipped', 'delivered'].includes(order.status) ? t('orders.preparingOrder') : t('orders.pendingProcessing')}
                         </p>
                       </div>
 
@@ -336,9 +338,9 @@ export default function OrderDetailsPage() {
                         }`}>
                           <Truck className="h-3.5 w-3.5" />
                         </div>
-                        <h4 className={`text-sm font-semibold ${['shipped', 'delivered'].includes(order.status) ? 'text-gray-900' : 'text-gray-400'}`}>Shipped</h4>
+                        <h4 className={`text-sm font-semibold ${['shipped', 'delivered'].includes(order.status) ? 'text-gray-900' : 'text-gray-400'}`}>{t('orders.shipped')}</h4>
                         <p className={`text-sm mt-1 transition-colors ${['shipped', 'delivered'].includes(order.status) ? 'text-gray-500' : 'text-gray-400'}`}>
-                          {['shipped', 'delivered'].includes(order.status) ? 'Your order is on the way.' : 'Waiting to be shipped'}
+                          {['shipped', 'delivered'].includes(order.status) ? t('orders.onTheWay') : t('orders.waitingShipped')}
                         </p>
                       </div>
 
@@ -351,9 +353,9 @@ export default function OrderDetailsPage() {
                         }`}>
                           <CheckCircle className="h-3.5 w-3.5" />
                         </div>
-                        <h4 className={`text-sm font-semibold ${order.status === 'delivered' ? 'text-gray-900' : 'text-gray-400'}`}>Delivered</h4>
+                        <h4 className={`text-sm font-semibold ${order.status === 'delivered' ? 'text-gray-900' : 'text-gray-400'}`}>{t('orders.delivered')}</h4>
                         <p className={`text-sm mt-1 transition-colors ${order.status === 'delivered' ? 'text-gray-500' : 'text-gray-400'}`}>
-                          {order.status === 'delivered' ? 'Your order has been delivered.' : 'Waiting for delivery'}
+                          {order.status === 'delivered' ? t('orders.orderDelivered') : t('orders.waitingDelivery')}
                         </p>
                       </div>
                     </div>

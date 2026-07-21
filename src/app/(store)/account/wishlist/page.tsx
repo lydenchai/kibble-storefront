@@ -10,10 +10,12 @@ import { fetchWishlistAction, toggleWishlistAction } from '@/actions/account.act
 import AccountSidebar from '@/components/account/AccountSidebar';
 import { WishlistProduct } from '@/types/wishlist-product';
 import { useFavoriteStore } from '@/store/useFavoriteStore';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function WishlistPage() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [items, setItems] = useState<WishlistProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,9 +77,9 @@ export default function WishlistPage() {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">My Wishlist</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('wishlist.title')}</h1>
             {items.length > 0 && (
-              <span className="text-sm text-gray-500">{items.length} item{items.length !== 1 ? 's' : ''}</span>
+              <span className="text-sm text-gray-500">{items.length} {items.length !== 1 ? t('wishlist.items') : t('wishlist.item')}</span>
             )}
           </div>
 
@@ -101,13 +103,13 @@ export default function WishlistPage() {
           ) : items.length === 0 ? (
             <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
               <Heart className="h-16 w-16 text-gray-200 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Your wishlist is empty</h2>
-              <p className="text-gray-500 text-sm mb-6">Save products you love and come back to them later.</p>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">{t('wishlist.emptyTitle')}</h2>
+              <p className="text-gray-500 text-sm mb-6">{t('wishlist.emptyDesc')}</p>
               <Link
                 href="/products"
                 className="inline-block bg-brand-600 text-white font-semibold px-8 py-3 rounded-xl hover:bg-brand-700 transition-colors"
               >
-                Browse Products
+                {t('wishlist.browseProducts')}
               </Link>
             </div>
           ) : (
