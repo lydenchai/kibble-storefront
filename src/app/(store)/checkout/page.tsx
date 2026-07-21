@@ -8,8 +8,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createOrderAction } from '@/actions/checkout.actions';
 import ABAQRCode from '@/components/checkout/ABAQRCode';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function CheckoutPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [orderId, setOrderId] = useState('');
@@ -49,27 +51,40 @@ export default function CheckoutPage() {
     
     try {
       const token = localStorage.getItem('accessToken');
-      const data = await createOrderAction(items, token, {
+      const response = await createOrderAction(items, token, {
         ...address,
         isDefault: false
       });
-      setOrderId(data.orderId);
+      
+      if (response.error) {
+        const errorMsg = response.error;
+        if (errorMsg === 'Invalid or expired token' || errorMsg === 'Unauthorized') {
+          useAuthStore.getState().logout();
+          router.push('/login?redirect=/checkout');
+          return;
+        }
+        setError(errorMsg);
+        setIsInitializing(false);
+        return;
+      }
+      
+      setOrderId(response.data.orderId);
     } catch (err: any) {
       console.error("Order creation error:", err);
-      setError(err.message || "Failed to initialize checkout. Please try again.");
+      setError("Failed to initialize checkout. Please try again.");
     } finally {
       setIsInitializing(false);
     }
   };
 
-  if (!mounted || !isAuthenticated) return <div className="min-h-screen flex items-center justify-center">Loading checkout...</div>;
+  if (!mounted || !isAuthenticated) return <div className="min-h-screen flex items-center justify-center">{t('checkout.loading')}</div>;
 
   if (items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
-        <p className="mb-8">Add some items before checking out.</p>
-        <Link href="/products" className="text-brand-600 font-bold hover:underline">Return to Shop</Link>
+        <h1 className="text-3xl font-bold mb-4">{t('checkout.emptyTitle')}</h1>
+        <p className="mb-8">{t('checkout.emptyDesc')}</p>
+        <Link href="/products" className="text-brand-600 font-bold hover:underline">{t('checkout.returnShop')}</Link>
       </div>
     );
   }
@@ -83,8 +98,8 @@ export default function CheckoutPage() {
     <div className="bg-gray-50 min-h-screen pb-16">
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-brand-600">Kibble Checkout</Link>
-          <div className="text-sm font-medium transition-colors">Secure Payment via ABA QR</div>
+          <Link href="/" className="text-2xl font-bold text-brand-600">{t('checkout.kibbleCheckout')}</Link>
+          <div className="text-sm font-medium transition-colors">{t('checkout.securePayment')}</div>
         </div>
       </div>
 
@@ -110,37 +125,37 @@ export default function CheckoutPage() {
             {orderId ? (
               <ABAQRCode orderId={orderId} total={total} />
             ) : (
-              <form onSubmit={handleAddressSubmit} className="bg-white/60 p-8 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Shipping Address</h2>
+              <form onSubmit={handleAddressSubmit} className="bg-white rounded-xl border border-gray-100 p-8">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">{t('checkout.shippingAddress')}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">House Number</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('checkout.houseNumber')}</label>
                     <input type="text" value={address.houseNumber} onChange={e => setAddress({...address, houseNumber: e.target.value})} className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" />
                   </div>
                   <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Street</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('checkout.street')}</label>
                     <input type="text" value={address.street} onChange={e => setAddress({...address, street: e.target.value})} className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" />
                   </div>
                   <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Village <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('checkout.village')} <span className="text-red-500">*</span></label>
                     <input required type="text" value={address.village} onChange={e => setAddress({...address, village: e.target.value})} className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" />
                   </div>
                   <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Commune <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('checkout.commune')} <span className="text-red-500">*</span></label>
                     <input required type="text" value={address.commune} onChange={e => setAddress({...address, commune: e.target.value})} className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" />
                   </div>
                   <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">District <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('checkout.district')} <span className="text-red-500">*</span></label>
                     <input required type="text" value={address.district} onChange={e => setAddress({...address, district: e.target.value})} className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" />
                   </div>
                   <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Province <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('checkout.province')} <span className="text-red-500">*</span></label>
                     <input required type="text" value={address.province} onChange={e => setAddress({...address, province: e.target.value})} className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" />
                   </div>
                 </div>
                 <div className="pt-4 border-t border-gray-100">
                   <button type="submit" disabled={isInitializing} className="w-full bg-brand-600 text-white font-bold py-4 rounded-xl hover:bg-brand-700 transition-colors shadow-lg disabled:opacity-70 flex justify-center cursor-pointer">
-                    {isInitializing ? 'Preparing Checkout...' : 'Proceed to Payment'}
+                    {isInitializing ? t('checkout.initializing') : t('checkout.confirmOrder')}
                   </button>
                 </div>
               </form>
@@ -149,8 +164,8 @@ export default function CheckoutPage() {
 
           {/* Order Summary Sidebar */}
           <div className="w-full lg:w-96">
-            <div className="bg-white/60 p-8 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 sticky top-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+            <div className="bg-white rounded-xl border border-gray-100 p-8 sticky top-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">{t('checkout.orderSummary')}</h2>
               
               <ul className="space-y-4 mb-6 max-h-64 overflow-y-auto pr-2">
                 {items.map(item => (

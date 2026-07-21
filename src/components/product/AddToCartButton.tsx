@@ -4,12 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCartStore } from '@/store/useCartStore';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Product } from '@/types/api';
-
-interface AddToCartButtonProps {
-  product: Product;
-  selectedVariantIndex?: number;
-}
+import { AddToCartButtonProps } from '@/types/components';
+import toast from 'react-hot-toast';
 
 export default function AddToCartButton({ product, selectedVariantIndex = 0 }: AddToCartButtonProps) {
   const router = useRouter();
@@ -40,6 +36,7 @@ export default function AddToCartButton({ product, selectedVariantIndex = 0 }: A
     addItem(product, variant, quantity);
 
     setIsAdded(true);
+    toast.success(`Added ${quantity} ${product.name} to cart`);
     setTimeout(() => setIsAdded(false), 2000);
   };
 

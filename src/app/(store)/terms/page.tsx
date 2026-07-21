@@ -105,11 +105,11 @@ export default function TermsPage() {
 
       {/* Footer note */}
       <div className="mt-16 flex flex-col sm:flex-row gap-4">
-        <Link href="/privacy" className="flex-1 bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 hover:border-brand-200 transition-colors group">
+        <Link href="/privacy" className="flex-1 bg-white rounded-xl border border-gray-100 p-6 hover:border-brand-200 transition-colors group">
           <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Also Read</p>
           <p className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">Privacy Policy →</p>
         </Link>
-        <Link href="/returns" className="flex-1 bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 hover:border-brand-200 transition-colors group">
+        <Link href="/returns" className="flex-1 bg-white rounded-xl border border-gray-100 p-6 hover:border-brand-200 transition-colors group">
           <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Also Read</p>
           <p className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">Return Policy →</p>
         </Link>

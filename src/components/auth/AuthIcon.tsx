@@ -15,7 +15,7 @@ export default function AuthIcon() {
 
   if (!mounted) {
     return (
-      <div className="p-2 text-gray-600">
+      <div className="p-2 text-gray-600 rounded-full">
         <User className="h-5 w-5" />
       </div>
     );
@@ -23,14 +23,14 @@ export default function AuthIcon() {
 
   if (isAuthenticated) {
     return (
-      <Link href="/account" className="p-2 text-gray-600 hover:text-brand-600 transition-colors" title="Account">
+      <Link href="/account" className="p-2 text-gray-600 hover:text-brand-600 hover:bg-gray-100 rounded-full transition-all" title="Account">
         <User className="h-5 w-5" />
       </Link>
     );
   }
 
   return (
-    <Link href="/login" className="flex items-center gap-2 p-2 text-gray-600 hover:text-brand-600 transition-colors" title="Login">
+    <Link href="/login" className="flex items-center gap-2 p-2 px-3 text-gray-600 hover:text-brand-600 hover:bg-gray-100 rounded-full transition-all" title="Login">
       <LogIn className="h-5 w-5" />
       <span className="hidden md:block text-sm font-medium">Sign In</span>
     </Link>

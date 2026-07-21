@@ -20,7 +20,7 @@ export default function ABAQRCode({ orderId, total }: { orderId: string, total: 
   };
 
   return (
-    <div className="bg-white/60 p-8 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 text-center flex flex-col items-center">
+    <div className="bg-white rounded-xl border border-gray-100 p-8 text-center flex flex-col items-center">
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Scan to Pay</h2>
       <p className="text-gray-600 mb-6">Please scan the ABA QR code below to complete your payment.</p>
       

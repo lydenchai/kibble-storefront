@@ -61,9 +61,9 @@ export default function ReturnsPage() {
 
       {/* Eligibility */}
       <div className="grid md:grid-cols-2 gap-6 mb-14">
-        <div className="bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
+        <div className="bg-white rounded-xl border border-gray-100 p-6">
           <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-500" /> Eligible for Return
+            Eligible for Return
           </h2>
           <ul className="space-y-3">
             {eligible.map((item) => (
@@ -75,9 +75,9 @@ export default function ReturnsPage() {
           </ul>
         </div>
 
-        <div className="bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
+        <div className="bg-white rounded-xl border border-gray-100 p-6">
           <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <XCircle className="h-5 w-5 text-red-400" /> Not Eligible for Return
+            Not Eligible for Return
           </h2>
           <ul className="space-y-3">
             {notEligible.map((item) => (
@@ -95,7 +95,7 @@ export default function ReturnsPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">How the Return Process Works</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map((s) => (
-            <div key={s.step} className="bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 relative overflow-hidden">
+            <div key={s.step} className="bg-white rounded-xl border border-gray-100 p-6 relative overflow-hidden">
               <div className="absolute top-4 right-4 text-5xl font-black text-gray-50 select-none">{s.step}</div>
               <div className="relative">
                 <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-700 text-sm font-bold flex items-center justify-center mb-4">
@@ -119,7 +119,7 @@ export default function ReturnsPage() {
       </div>
 
       {/* CTA */}
-      <div className="text-center bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10">
+      <div className="text-center bg-white rounded-xl border border-gray-100 p-10">
         <p className="text-gray-700 font-medium mb-2">Ready to start a return?</p>
         <p className="text-gray-500 text-sm mb-6">Reach out and we'll take care of you.</p>
         <Link

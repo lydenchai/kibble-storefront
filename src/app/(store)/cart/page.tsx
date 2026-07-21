@@ -4,10 +4,13 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCartStore } from '@/store/useCartStore';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function CartPage() {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const { items, updateQuantity, removeItem, getTotalPrice, clearCart } = useCartStore();
+  const subtotal = getTotalPrice();
 
   useEffect(() => {
     setMounted(true);
@@ -21,15 +24,15 @@ export default function CartPage() {
     return (
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center max-w-2xl">
         <div className="text-6xl mb-6">🛒</div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('cart.emptyTitle')}</h1>
         <p className="text-gray-600 mb-8">
-          Looks like you haven't added any premium pet supplies to your cart yet.
+          {t('cart.emptyDesc')}
         </p>
         <Link 
           href="/products" 
           className="inline-block bg-brand-600 text-white font-semibold px-8 py-4 rounded-full hover:bg-brand-700 transition-colors shadow-lg"
         >
-          Start Shopping
+          {t('cart.startShopping')}
         </Link>
       </div>
     );
@@ -37,12 +40,12 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('cart.shoppingCart')}</h1>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Cart Items */}
         <div className="flex-1 space-y-6">
-          <div className="bg-white/60 p-8 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 p-8 overflow-hidden">
             <ul className="divide-y divide-gray-100">
               {items.map((item) => (
                 <li key={item.id} className="mb-3 flex flex-col sm:flex-row items-start sm:items-center gap-6">
@@ -64,8 +67,8 @@ export default function CartPage() {
                       <h3 className="text-lg font-semibold text-gray-900 hover:text-brand-600 truncate">{item.product.name}</h3>
                     </Link>
                     <div className="text-sm text-gray-500 mt-1">
-                      {item.variant.size && <span className="mr-3">Size: {item.variant.size}</span>}
-                      {item.variant.flavor && <span>Flavor: {item.variant.flavor}</span>}
+                      {item.variant.size && <span className="mr-3">{t('cart.size')} {item.variant.size}</span>}
+                      {item.variant.flavor && <span>{t('cart.flavor')} {item.variant.flavor}</span>}
                     </div>
                     <div className="text-brand-600 font-bold mt-2">${item.variant.price.toFixed(2)}</div>
                   </div>
@@ -110,36 +113,41 @@ export default function CartPage() {
         </div>
 
         {/* Order Summary */}
-        <div className="w-full lg:w-96 flex-shrink-0">
-          <div className="bg-white/60 p-8 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 sticky top-24">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+        <div className="lg:w-[400px]">
+          <div className="bg-white p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 sticky top-24">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">{t('checkout.orderSummary')}</h2>
             
-            <div className="space-y-4 text-sm text-gray-600 mb-6">
+            <div className="space-y-4 text-gray-600 mb-6">
               <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span className="font-medium text-gray-900">${getTotalPrice().toFixed(2)}</span>
+                <span>{t('cart.subtotal')}</span>
+                <span className="font-medium text-gray-900">${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Shipping</span>
-                <span>Calculated at checkout</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Taxes</span>
-                <span>Calculated at checkout</span>
+                <span>{t('checkout.shipping')}</span>
+                <span className="text-sm">{t('cart.calculatedNextStep')}</span>
               </div>
             </div>
 
-            <div className="border-t border-gray-100 pt-4 mb-8 flex justify-between items-center">
-              <span className="font-bold text-gray-900">Estimated Total</span>
-              <span className="text-2xl font-bold text-brand-600">${getTotalPrice().toFixed(2)}</span>
+            <div className="border-t border-gray-100 pt-4 mb-8">
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-gray-900">{t('checkout.total')}</span>
+                <span className="text-2xl font-bold text-brand-600">${subtotal.toFixed(2)}</span>
+              </div>
             </div>
 
             <Link 
               href="/checkout"
-              className="block w-full bg-brand-600 text-white text-center font-bold py-4 rounded-full hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30"
+              className="w-full flex items-center justify-center bg-brand-600 text-white font-bold py-4 rounded-xl hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/25 mb-4"
             >
-              Proceed to Checkout
+              {t('cart.checkout')}
             </Link>
+
+            <button 
+              onClick={clearCart}
+              className="w-full text-gray-500 hover:text-red-500 text-sm font-medium transition-colors"
+            >
+              Clear Cart
+            </button>
           </div>
         </div>
       </div>

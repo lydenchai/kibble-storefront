@@ -32,13 +32,13 @@ export async function createOrderAction(items: CartItem[], token: string | null,
 
     if (!res.ok) {
       const error = await res.json();
-      throw new Error(error.error?.message || 'Failed to create order');
+      return { error: error.error?.message || 'Failed to create order' };
     }
 
     const data = await res.json();
-    return data.data; // Should contain { orderId }
+    return { data: data.data }; // Should contain { orderId }
   } catch (error: any) {
     console.error("Failed to create order:", error);
-    throw error;
+    return { error: error.message || 'Failed to create order' };
   }
 }

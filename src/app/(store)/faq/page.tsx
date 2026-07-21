@@ -118,7 +118,7 @@ export default function FAQPage() {
       </div>
 
       {/* CTA */}
-      <div className="mt-16 text-center bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10">
+      <div className="mt-16 text-center bg-white rounded-xl border border-gray-100 p-10">
         <p className="text-gray-700 font-medium mb-2">Still have questions?</p>
         <p className="text-gray-500 text-sm mb-6">
           Our support team is ready to help you Monday – Saturday, 9 am – 6 pm.

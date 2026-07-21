@@ -1,23 +1,8 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { Product, Variant } from '@/types/api';
-
-export interface CartItem {
-  id: string; // Unique ID for the cart line item (could be variant.sku)
-  product: Product;
-  variant: Variant;
-  quantity: number;
-}
-
-interface CartState {
-  items: CartItem[];
-  addItem: (product: Product, variant: Variant, quantity: number) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
-  getTotalItems: () => number;
-  getTotalPrice: () => number;
-}
+import { CartState } from "@/types/store";
+import { CartItem } from "@/types/cart-item";
+export type { CartItem };
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -26,7 +11,7 @@ export const useCartStore = create<CartState>()(
       addItem: (product, variant, quantity) => {
         set((state) => {
           const existingItemIndex = state.items.findIndex(
-            (item) => item.variant.sku === variant.sku
+            (item) => item.variant.sku === variant.sku,
           );
 
           if (existingItemIndex >= 0) {
@@ -58,7 +43,9 @@ export const useCartStore = create<CartState>()(
       updateQuantity: (id, quantity) => {
         set((state) => ({
           items: state.items.map((item) =>
-            item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
+            item.id === id
+              ? { ...item, quantity: Math.max(1, quantity) }
+              : item,
           ),
         }));
       },
@@ -69,12 +56,15 @@ export const useCartStore = create<CartState>()(
       getTotalPrice: () => {
         return get().items.reduce(
           (total, item) => total + item.variant.price * item.quantity,
-          0
+          0,
         );
       },
+      isCartOpen: false,
+      openCart: () => set({ isCartOpen: true }),
+      closeCart: () => set({ isCartOpen: false }),
     }),
     {
-      name: 'kibble-cart-storage', // name of the item in the storage (must be unique)
-    }
-  )
+      name: "kibble-cart-storage", // name of the item in the storage (must be unique)
+    },
+  ),
 );

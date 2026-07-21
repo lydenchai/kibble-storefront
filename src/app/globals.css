@@ -30,3 +30,12 @@ body {
   background-color: #f9fafb;
   color: #111827;
 }
+
+@layer base {
+  button, 
+  [type='button'], 
+  [type='reset'], 
+  [type='submit'] {
+    cursor: pointer;
+  }
+}

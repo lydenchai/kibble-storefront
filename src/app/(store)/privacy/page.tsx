@@ -154,7 +154,7 @@ export default function PrivacyPage() {
       </div>
 
       {/* Contact */}
-      <div className="mt-16 bg-white bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8">
+      <div className="mt-16 bg-white bg-white rounded-xl border border-gray-100 p-8">
         <h2 className="font-bold text-gray-900 mb-2">Questions About This Policy?</h2>
         <p className="text-sm text-gray-500 mb-4">
           If you have any questions or concerns about our Privacy Policy, please contact us at:

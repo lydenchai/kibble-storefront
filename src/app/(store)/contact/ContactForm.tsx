@@ -58,7 +58,7 @@ export default function ContactForm() {
       {/* Contact Channels */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-14">
         {channels.map((c) => (
-          <div key={c.label} className="bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 flex flex-col gap-3">
+          <div key={c.label} className="bg-white rounded-xl border border-gray-100 p-6 flex flex-col gap-3">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${c.color}`}>
               {c.icon}
             </div>
@@ -72,7 +72,7 @@ export default function ContactForm() {
       </div>
 
       {/* Form */}
-      <div className="bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <div className="px-8 py-6 border-b border-gray-100">
           <h2 className="text-xl font-bold text-gray-900">Send Us a Message</h2>
           <p className="text-sm text-gray-500 mt-1">Fill out the form and we&apos;ll get back to you as soon as possible.</p>

@@ -1,6 +1,7 @@
 "use server";
 
-import { Product, PaginatedResponse } from "@/types/api";
+import { PaginatedResponse } from "@/types/api";
+import { Product } from "@/types/product";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -10,6 +11,7 @@ export async function getProductsAction(searchParams?: { [key: string]: string |
   if (searchParams) {
     if (searchParams.category) url.searchParams.append('category', searchParams.category as string);
     if (searchParams.petType) url.searchParams.append('petType', searchParams.petType as string);
+    if (searchParams.search) url.searchParams.append('search', searchParams.search as string);
     if (searchParams.sort) url.searchParams.append('sort', searchParams.sort as string);
     if (searchParams.page) url.searchParams.append('page', searchParams.page as string);
     if (searchParams.limit) url.searchParams.append('limit', searchParams.limit as string);

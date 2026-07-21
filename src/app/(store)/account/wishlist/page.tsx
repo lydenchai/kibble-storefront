@@ -8,15 +8,8 @@ import { Heart, Trash2, ShoppingCart, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { fetchWishlistAction, toggleWishlistAction } from '@/actions/account.actions';
 import AccountSidebar from '@/components/account/AccountSidebar';
-
-interface WishlistProduct {
-  _id: string;
-  name: string;
-  slug: string;
-  brand: string;
-  images: string[];
-  variants: { price: number; compareAtPrice?: number; stock: number }[];
-}
+import { WishlistProduct } from '@/types/wishlist-product';
+import { useFavoriteStore } from '@/store/useFavoriteStore';
 
 export default function WishlistPage() {
   const router = useRouter();
@@ -41,9 +34,14 @@ export default function WishlistPage() {
       try {
         const token = localStorage.getItem('accessToken');
         const res = await fetchWishlistAction(token);
-        setItems(res.data?.wishlist || []);
-      } catch {
-        setError('Failed to load wishlist.');
+        if (res.error) throw new Error(res.error);
+        if (res.data?.wishlist) {
+          setItems(res.data.wishlist);
+          useFavoriteStore.getState().setFavorites(res.data.wishlist);
+        }
+      } catch (err: any) {
+        console.warn('Wishlist fetch error:', err);
+        setError(err.message || 'Failed to load wishlist.');
       } finally {
         setLoading(false);
       }
@@ -56,11 +54,13 @@ export default function WishlistPage() {
     try {
       const token = localStorage.getItem('accessToken');
       const res = await toggleWishlistAction(productId, token);
-      // Server returns updated wishlist array of IDs — re-filter locally
-      const updatedIds: string[] = res.data?.wishlist || [];
-      setItems((prev) => prev.filter((p) => updatedIds.includes(p._id)));
-    } catch {
-      // silent
+      if (res.error) throw new Error(res.error);
+      if (res.data?.wishlist) {
+        setItems(res.data.wishlist);
+        useFavoriteStore.getState().setFavorites(res.data.wishlist);
+      }
+    } catch (err) {
+      console.warn('Wishlist remove error:', err);
     } finally {
       setRemoving(null);
     }
@@ -99,7 +99,7 @@ export default function WishlistPage() {
               <p className="text-red-700 font-medium">{error}</p>
             </div>
           ) : items.length === 0 ? (
-            <div className="bg-white/60 backdrop-blur-xl rounded-2xl border border-gray-100/50 p-16 text-center">
+            <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
               <Heart className="h-16 w-16 text-gray-200 mx-auto mb-4" />
               <h2 className="text-xl font-bold text-gray-900 mb-2">Your wishlist is empty</h2>
               <p className="text-gray-500 text-sm mb-6">Save products you love and come back to them later.</p>
@@ -120,7 +120,7 @@ export default function WishlistPage() {
                 const isRemoving = removing === product._id;
 
                 return (
-                  <div key={product._id} className="group bg-white/60 backdrop-blur-xl rounded-2xl border border-gray-100/50 shadow-[0_4px_20px_rgb(0,0,0,0.03)] overflow-hidden hover:shadow-lg transition-all duration-300">
+                  <div key={product._id} className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
                     <Link href={`/products/${product.slug}`} className="relative aspect-[4/3] bg-gray-50 block overflow-hidden">
                       {product.images?.[0] ? (
                         <Image
@@ -152,18 +152,18 @@ export default function WishlistPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <button
-                            className="w-8 h-8 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center hover:bg-brand-600 hover:text-white transition-colors cursor-pointer"
+                            className="w-10 h-10 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center hover:bg-brand-600 hover:text-white transition-colors cursor-pointer"
                             title="Add to Cart"
                           >
-                            <ShoppingCart className="h-4 w-4" />
+                            <ShoppingCart className="h-5 w-5" />
                           </button>
                           <button
                             onClick={() => handleRemove(product._id)}
                             disabled={isRemoving}
-                            className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer disabled:opacity-40"
+                            className="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer disabled:opacity-40"
                             title="Remove from Wishlist"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-5 w-5" />
                           </button>
                         </div>
                       </div>

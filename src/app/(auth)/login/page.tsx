@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
 import { EyeOff, Eye } from "lucide-react";
 import { loginAction, registerAction } from "@/actions/auth.actions";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,6 +16,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const login = useAuthStore((state) => state.login);
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,15 +68,15 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 p-10 bg-white/60 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+      <div className="max-w-md w-full space-y-8 p-10 bg-white rounded-xl border border-gray-100">
         <div>
           <h2 className="mt-2 text-center text-3xl font-extrabold text-gray-900">
-            {isLogin ? "Welcome back" : "Create an account"}
+            {isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             {isLogin
-              ? "Sign in to access your account"
-              : "Join Kibble for exclusive benefits"}
+              ? t('auth.signInDesc')
+              : t('auth.joinDesc')}
           </p>
         </div>
 
@@ -84,7 +85,7 @@ export default function LoginPage() {
             {!isLogin && (
               <div>
                 <label htmlFor="name" className="sr-only">
-                  Full Name
+                  {t('auth.fullName')}
                 </label>
                 <input
                   id="name"
@@ -94,13 +95,13 @@ export default function LoginPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
-                  placeholder="Full Name"
+                  placeholder={t('auth.fullName')}
                 />
               </div>
             )}
             <div>
               <label htmlFor="email-address" className="sr-only">
-                Email address
+                {t('auth.email')}
               </label>
               <input
                 id="email-address"
@@ -111,12 +112,12 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
-                placeholder="Email address"
+                placeholder={t('auth.email')}
               />
             </div>
             <div className="relative">
               <label htmlFor="password" className="sr-only">
-                Password
+                {t('auth.password')}
               </label>
               <input
                 id="password"
@@ -127,7 +128,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
-                placeholder="Password"
+                placeholder={t('auth.password')}
               />
               <button
                 type="button"
@@ -156,7 +157,7 @@ export default function LoginPage() {
                   htmlFor="remember-me"
                   className="ml-2 block text-sm text-gray-900"
                 >
-                  Remember me
+                  {t('auth.rememberMe')}
                 </label>
               </div>
 
@@ -165,7 +166,7 @@ export default function LoginPage() {
                   href="#"
                   className="font-medium text-brand-600 hover:text-brand-500"
                 >
-                  Forgot your password?
+                  {t('auth.forgotPassword')}
                 </a>
               </div>
             </div>
@@ -177,7 +178,7 @@ export default function LoginPage() {
               disabled={isLoading}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:opacity-70 cursor-pointer"
             >
-              {isLoading ? "Processing..." : isLogin ? "Sign In" : "Sign Up"}
+              {isLoading ? t('auth.processing') : isLogin ? t('auth.signInBtn') : t('auth.signUpBtn')}
             </button>
           </div>
         </form>
@@ -189,7 +190,7 @@ export default function LoginPage() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-white text-gray-500">
-                Or continue with
+                {t('auth.orContinueWith')}
               </span>
             </div>
           </div>
@@ -197,14 +198,14 @@ export default function LoginPage() {
           <div className="mt-6 grid grid-cols-2 gap-3">
             <div>
               <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer">
-                <span className="sr-only">Sign in with Google</span>
-                Google
+                <span className="sr-only">{t('auth.signInGoogle')}</span>
+                {t('auth.google')}
               </button>
             </div>
             <div>
               <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer">
-                <span className="sr-only">Sign in with Facebook</span>
-                Facebook
+                <span className="sr-only">{t('auth.signInFacebook')}</span>
+                {t('auth.facebook')}
               </button>
             </div>
           </div>
@@ -216,8 +217,8 @@ export default function LoginPage() {
             className="cursor-pointer text-brand-600 hover:text-brand-700 font-medium text-sm cursor-pointer"
           >
             {isLogin
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Sign in"}
+              ? t('auth.noAccount')
+              : t('auth.hasAccount')}
           </button>
         </div>
       </div>

@@ -10,8 +10,8 @@ export default function NotFound() {
         Oops! We couldn't find the page you were looking for. It might have been moved or doesn't exist.
       </p>
       <Link 
-        href="/"
-        className="px-6 py-3 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 transition-colors"
+        href="/" 
+        className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-full transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500"
       >
         Return to Home
       </Link>

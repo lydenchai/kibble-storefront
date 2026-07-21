@@ -46,12 +46,15 @@ export default function SettingsPage() {
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : '';
       const res = await updateProfileAction({ name, phone }, token);
-      // Update the auth store with the new name
-      if (user) {
-        login({ ...user, name: res.user.name }, token || '');
+      if (res.error) throw new Error(res.error);
+      if (res.success) {
+        // Update the auth store with the new name
+        if (user) {
+          login({ ...user, name: res.user.name }, token || '');
+        }
+        setProfileSave('success');
+        setTimeout(() => setProfileSave('idle'), 3000);
       }
-      setProfileSave('success');
-      setTimeout(() => setProfileSave('idle'), 3000);
     } catch (err: any) {
       setProfileError(err.message || 'Failed to save profile.');
       setProfileSave('error');
@@ -72,7 +75,8 @@ export default function SettingsPage() {
     setPasswordSave('loading');
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : '';
-      await updateProfileAction({ currentPassword, newPassword }, token);
+      const res = await updateProfileAction({ currentPassword, newPassword }, token);
+      if (res.error) throw new Error(res.error);
       setPasswordSave('success');
       setCurrentPassword('');
       setNewPassword('');
@@ -95,7 +99,7 @@ export default function SettingsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Account Settings</h1>
 
           {/* Profile Information */}
-          <div className="bg-white/60 backdrop-blur-xl rounded-2xl border border-gray-100/50 shadow-[0_4px_20px_rgb(0,0,0,0.03)] overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
                 <User className="h-4 w-4" />
@@ -173,7 +177,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Change Password */}
-          <div className="bg-white/60 backdrop-blur-xl rounded-2xl border border-gray-100/50 shadow-[0_4px_20px_rgb(0,0,0,0.03)] overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center">
                 <Lock className="h-4 w-4" />

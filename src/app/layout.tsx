@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from 'react-hot-toast';
+import CartDrawer from '@/components/cart/CartDrawer';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,6 +34,8 @@ export const metadata: Metadata = {
   }
 };
 
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -47,6 +51,8 @@ export default function RootLayout({
           Skip to main content
         </a>
         {children}
+        <CartDrawer />
+        <Toaster position="bottom-center" />
       </body>
     </html>
   );

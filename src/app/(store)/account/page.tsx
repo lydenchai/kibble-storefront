@@ -7,9 +7,11 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useState } from "react";
 import { fetchUserOrdersAction, fetchWishlistAction } from "@/actions/account.actions";
 import AccountSidebar from "@/components/account/AccountSidebar";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function AccountDashboard() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { user, logout } = useAuthStore();
   const [mounted, setMounted] = useState(false);
   const [stats, setStats] = useState({ totalOrders: 0, savedItems: 0, recentOrders: [] as any[] });
@@ -34,13 +36,17 @@ export default function AccountDashboard() {
           fetchUserOrdersAction(1, 5, token),
           fetchWishlistAction(token)
         ]);
+
+        if (ordersRes.error) throw new Error(ordersRes.error);
+        if (wishlistRes.error) throw new Error(wishlistRes.error);
+
         setStats({
           totalOrders: ordersRes.pagination?.total || 0,
           recentOrders: ordersRes.data || [],
           savedItems: wishlistRes.data?.wishlist?.length || 0
         });
       } catch (error) {
-        console.error("Failed to fetch account data", error);
+        console.warn("Failed to fetch account data", error);
       }
     };
     fetchData();
@@ -56,49 +62,49 @@ export default function AccountDashboard() {
         {/* Main Content */}
         <div className="flex-1 space-y-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Welcome back, {user.name.split(" ")[0]}!
+            {t('account.welcomeBack')}, {user.name.split(" ")[0]}!
           </h1>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="bg-white/60 p-8 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 flex items-center gap-6">
+            <div className="bg-white rounded-xl border border-gray-100 p-8 flex items-center gap-6">
               <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
                 <Package className="h-6 w-6" />
               </div>
               <div>
                 <p className="text-sm text-gray-500 font-medium">
-                  Total Orders
+                  {t('account.totalOrders')}
                 </p>
                 <p className="text-2xl font-bold text-gray-900">{stats.totalOrders}</p>
               </div>
             </div>
-            <div className="bg-white/60 p-8 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 flex items-center gap-6">
+            <div className="bg-white rounded-xl border border-gray-100 p-8 flex items-center gap-6">
               <div className="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center">
                 <Heart className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 font-medium">Saved Items</p>
+                <p className="text-sm text-gray-500 font-medium">{t('account.savedItems')}</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.savedItems}</p>
               </div>
             </div>
-            <div className="bg-white/60 p-8 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 flex items-center gap-6">
+            <div className="bg-white rounded-xl border border-gray-100 p-8 flex items-center gap-6">
               <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center">
                 <span className="text-2xl">🦴</span>
               </div>
               <div>
-                <p className="text-sm text-gray-500 font-medium">Points</p>
+                <p className="text-sm text-gray-500 font-medium">{t('account.points')}</p>
                 <p className="text-2xl font-bold text-gray-900">1,250</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/60 p-6 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 p-6 overflow-hidden">
             <div className="pb-4 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Recent Orders</h2>
+              <h2 className="text-xl font-bold text-gray-900">{t('account.recentOrders')}</h2>
               <Link
                 href="/account/orders"
                 className="text-sm font-medium text-brand-600 hover:text-brand-700"
               >
-                View All
+                {t('account.viewAllOrders')} &rarr;
               </Link>
             </div>
             <div className="overflow-x-auto">
