@@ -1,6 +1,6 @@
 "use server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
 
 export async function fetchUserOrdersAction(page: number, limit: number, token: string | null) {
   if (!token) return { success: false, error: "Unauthorized" };
@@ -75,6 +75,26 @@ export async function toggleWishlistAction(productId: string, token: string | nu
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     return { success: false, error: errorData.error?.message || "Failed to toggle wishlist" };
+  }
+
+  return res.json();
+}
+
+export async function fetchProfileAction(token: string | null) {
+  if (!token) return { success: false, error: "Unauthorized" };
+
+  const res = await fetch(`${API_URL}/auth/profile`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    cache: 'no-store'
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    return { success: false, error: errorData.error?.message || "Failed to fetch profile" };
   }
 
   return res.json();

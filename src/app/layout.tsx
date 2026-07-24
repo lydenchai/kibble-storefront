@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from 'react-hot-toast';
+import { Suspense } from 'react';
 import CartDrawer from '@/components/cart/CartDrawer';
+import LoadingBar from '@/components/ui/LoadingBar';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -50,6 +52,9 @@ export default function RootLayout({
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white focus:text-black">
           Skip to main content
         </a>
+        <Suspense fallback={null}>
+          <LoadingBar />
+        </Suspense>
         {children}
         <CartDrawer />
         <Toaster position="bottom-center" />

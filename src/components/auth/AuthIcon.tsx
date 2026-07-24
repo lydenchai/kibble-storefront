@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { User, LogIn } from 'lucide-react';
+import { User } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 
 export default function AuthIcon() {
@@ -13,26 +13,16 @@ export default function AuthIcon() {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return (
-      <div className="p-2 text-gray-600 rounded-full">
-        <User className="h-5 w-5" />
-      </div>
-    );
-  }
-
-  if (isAuthenticated) {
-    return (
-      <Link href="/account" className="p-2 text-gray-600 hover:text-brand-600 hover:bg-gray-100 rounded-full transition-all" title="Account">
-        <User className="h-5 w-5" />
-      </Link>
-    );
-  }
+  const href = mounted && isAuthenticated ? "/account" : "/login";
+  const title = mounted && isAuthenticated ? "Account Overview" : "Login";
 
   return (
-    <Link href="/login" className="flex items-center gap-2 p-2 px-3 text-gray-600 hover:text-brand-600 hover:bg-gray-100 rounded-full transition-all" title="Login">
-      <LogIn className="h-5 w-5" />
-      <span className="hidden md:block text-sm font-medium">Sign In</span>
+    <Link 
+      href={href} 
+      className="p-2 text-gray-600 hover:text-brand-600 hover:bg-gray-100 rounded-full transition-all flex items-center justify-center cursor-pointer" 
+      title={title}
+    >
+      <User className="h-5 w-5" />
     </Link>
   );
 }

@@ -3,10 +3,16 @@
 import Link from 'next/link';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export default function Footer() {
   const { t } = useTranslation();
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success('Thank you for subscribing!');
+  };
 
   return (
     <footer className="bg-white border-t border-gray-200 pt-16 pb-8">
@@ -19,7 +25,7 @@ export default function Footer() {
             <p className="text-gray-600">{t('footer.subscribeDesc')}</p>
           </div>
           <div className="w-full md:w-auto flex-1 max-w-md">
-            <form className="flex gap-2">
+            <form onSubmit={handleSubscribe} className="flex gap-2">
               <input 
                 type="email" 
                 placeholder={t('footer.emailPlaceholder')}
@@ -27,8 +33,8 @@ export default function Footer() {
                 required
               />
               <button 
-                type="button" 
-                className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-full transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500"
+                type="submit" 
+                className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-full transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 cursor-pointer"
               >
                 {t('footer.subscribe')}
               </button>
@@ -47,15 +53,12 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4">
               <a href="#" className="text-gray-400 hover:text-brand-600 transition-colors">
-                {/* @ts-expect-error React 19 typing compatibility */}
                 <FaFacebook className="h-5 w-5" />
               </a>
               <a href="#" className="text-gray-400 hover:text-brand-600 transition-colors">
-                {/* @ts-expect-error React 19 typing compatibility */}
                 <FaInstagram className="h-5 w-5" />
               </a>
               <a href="#" className="text-gray-400 hover:text-brand-600 transition-colors">
-                {/* @ts-expect-error React 19 typing compatibility */}
                 <FaTwitter className="h-5 w-5" />
               </a>
             </div>

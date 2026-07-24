@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Package, Heart } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useState } from "react";
-import { fetchUserOrdersAction, fetchWishlistAction } from "@/actions/account.actions";
+import { fetchUserOrdersAction, fetchWishlistAction, fetchProfileAction } from "@/actions/account.actions";
 import AccountSidebar from "@/components/account/AccountSidebar";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -14,7 +14,7 @@ export default function AccountDashboard() {
   const { t } = useTranslation();
   const { user, logout } = useAuthStore();
   const [mounted, setMounted] = useState(false);
-  const [stats, setStats] = useState({ totalOrders: 0, savedItems: 0, recentOrders: [] as any[] });
+  const [stats, setStats] = useState({ totalOrders: 0, savedItems: 0, points: 0, recentOrders: [] as any[] });
 
   useEffect(() => {
     setMounted(true);
@@ -32,9 +32,10 @@ export default function AccountDashboard() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        const [ordersRes, wishlistRes] = await Promise.all([
+        const [ordersRes, wishlistRes, profileRes] = await Promise.all([
           fetchUserOrdersAction(1, 5, token),
-          fetchWishlistAction(token)
+          fetchWishlistAction(token),
+          fetchProfileAction(token)
         ]);
 
         if (ordersRes.error) throw new Error(ordersRes.error);
@@ -43,7 +44,8 @@ export default function AccountDashboard() {
         setStats({
           totalOrders: ordersRes.pagination?.total || 0,
           recentOrders: ordersRes.data || [],
-          savedItems: wishlistRes.data?.wishlist?.length || 0
+          savedItems: wishlistRes.data?.wishlist?.length || 0,
+          points: profileRes.data?.user?.points ?? user?.points ?? 0
         });
       } catch (error) {
         console.warn("Failed to fetch account data", error);
@@ -52,10 +54,27 @@ export default function AccountDashboard() {
     fetchData();
   }, [mounted, user]);
 
-  if (!mounted || !user) return null;
+  if (!mounted || !user) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex flex-col md:flex-row gap-6">
+          <AccountSidebar />
+          <div className="flex-1 space-y-8 animate-pulse">
+            <div className="h-8 bg-gray-100 rounded w-48" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-xl border border-gray-100 p-8 h-28" />
+              ))}
+            </div>
+            <div className="bg-white rounded-xl border border-gray-100 p-6 h-64" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
       <div className="flex flex-col md:flex-row gap-6">
         <AccountSidebar />
 
@@ -92,7 +111,7 @@ export default function AccountDashboard() {
               </div>
               <div>
                 <p className="text-sm text-gray-500 font-medium">{t('account.points')}</p>
-                <p className="text-2xl font-bold text-gray-900">1,250</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.points.toLocaleString()}</p>
               </div>
             </div>
           </div>
@@ -104,7 +123,7 @@ export default function AccountDashboard() {
                 href="/account/orders"
                 className="text-sm font-medium text-brand-600 hover:text-brand-700"
               >
-                {t('account.viewAllOrders')} &rarr;
+                {t('account.viewAllOrders')}
               </Link>
             </div>
             <div className="overflow-x-auto">

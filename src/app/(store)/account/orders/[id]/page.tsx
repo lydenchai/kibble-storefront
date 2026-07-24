@@ -12,11 +12,11 @@ import { Order } from '@/types/order';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const statusConfig: Record<Order['status'], { labelKey: string; color: string; icon: React.ElementType }> = {
-  pending:    { labelKey: 'orders.pending',    color: 'bg-gray-50 text-gray-600', icon: Clock },
-  processing: { labelKey: 'orders.processing', color: 'bg-gray-100 text-gray-800', icon: AlertCircle },
-  shipped:    { labelKey: 'orders.shipped',    color: 'bg-gray-200 text-gray-900', icon: Truck },
-  delivered:  { labelKey: 'orders.delivered',  color: 'bg-black text-white',       icon: CheckCircle },
-  cancelled:  { labelKey: 'orders.cancelled',  color: 'bg-gray-50 text-gray-400 line-through', icon: XCircle },
+  pending:    { labelKey: 'orders.pending',    color: 'bg-amber-50 text-amber-700 border border-amber-200/70', icon: Clock },
+  processing: { labelKey: 'orders.processing', color: 'bg-sky-50 text-sky-700 border border-sky-200/70', icon: AlertCircle },
+  shipped:    { labelKey: 'orders.shipped',    color: 'bg-indigo-50 text-indigo-700 border border-indigo-200/70', icon: Truck },
+  delivered:  { labelKey: 'orders.delivered',  color: 'bg-emerald-50 text-emerald-700 border border-emerald-200/70', icon: CheckCircle },
+  cancelled:  { labelKey: 'orders.cancelled',  color: 'bg-rose-50 text-rose-600 border border-rose-200/70 line-through', icon: XCircle },
 };
 
 export default function OrderDetailsPage() {
@@ -66,7 +66,7 @@ export default function OrderDetailsPage() {
     fetchOrder();
   }, [mounted, user, params?.id, router]);
 
-  if (!mounted || !user) return null;
+  const showSkeleton = !mounted || loading;
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -82,7 +82,7 @@ export default function OrderDetailsPage() {
             <h1 className="text-2xl font-bold text-gray-900">{t('orders.orderDetails')}</h1>
           </div>
 
-          {loading ? (
+          {showSkeleton ? (
             <div className="bg-white rounded-xl border border-gray-100 overflow-hidden animate-pulse">
               {/* Header Skeleton */}
               <div className="px-6 py-5 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -152,7 +152,7 @@ export default function OrderDetailsPage() {
               <p className="text-red-700 font-medium">{error || 'Order not found'}</p>
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-xl border border-gray-100 overflow-hidden animate-fade-in">
               {/* Header */}
               <div className="px-6 py-5 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -304,60 +304,100 @@ export default function OrderDetailsPage() {
                         </div>
                       )}
                     </div>
-                    <div className="relative pl-10 border-l border-gray-100 space-y-10 mt-8 ml-2">
-                      {/* Order Placed Step */}
-                      <div className="relative">
-                        <div className="absolute w-8 h-8 -left-[56.5px] flex items-center justify-center rounded-full bg-black text-white ring-8 ring-white">
-                          <Clock className="h-3.5 w-3.5" />
-                        </div>
-                        <h4 className="text-sm font-semibold text-gray-900">{t('orders.orderPlaced')}</h4>
-                        <p className="text-sm text-gray-500 mt-1">{t('orders.receivedOrder')}</p>
-                      </div>
+                    <div className="relative space-y-8 mt-8 ml-2">
+                      {/* Dynamic Tracking Steps */}
+                      {(() => {
+                        const currentStatusIndex = order.status === 'delivered' ? 3 
+                          : order.status === 'shipped' ? 2 
+                          : order.status === 'processing' ? 1 
+                          : 0;
 
-                      {/* Processing Step */}
-                      <div className="relative">
-                        <div className={`absolute w-8 h-8 -left-[56.5px] flex items-center justify-center rounded-full ring-8 ring-white transition-all duration-300 ${
-                          ['processing', 'shipped', 'delivered'].includes(order.status)
-                            ? 'bg-black text-white'
-                            : 'bg-white border border-gray-200 text-gray-400'
-                        }`}>
-                          <Package className="h-3.5 w-3.5" />
-                        </div>
-                        <h4 className={`text-sm font-semibold ${['processing', 'shipped', 'delivered'].includes(order.status) ? 'text-gray-900' : 'text-gray-400'}`}>{t('orders.processing')}</h4>
-                        <p className={`text-sm mt-1 transition-colors ${['processing', 'shipped', 'delivered'].includes(order.status) ? 'text-gray-500' : 'text-gray-400'}`}>
-                          {['processing', 'shipped', 'delivered'].includes(order.status) ? t('orders.preparingOrder') : t('orders.pendingProcessing')}
-                        </p>
-                      </div>
+                        const steps = [
+                          {
+                            title: t('orders.orderPlaced'),
+                            desc: t('orders.receivedOrder'),
+                            icon: Clock,
+                            completed: true,
+                            active: currentStatusIndex === 0,
+                          },
+                          {
+                            title: t('orders.processing'),
+                            desc: currentStatusIndex >= 1 ? t('orders.preparingOrder') : t('orders.pendingProcessing'),
+                            icon: Package,
+                            completed: currentStatusIndex >= 1,
+                            active: currentStatusIndex === 1,
+                          },
+                          {
+                            title: t('orders.shipped'),
+                            desc: currentStatusIndex >= 2 ? t('orders.onTheWay') : t('orders.waitingShipped'),
+                            icon: Truck,
+                            completed: currentStatusIndex >= 2,
+                            active: currentStatusIndex === 2,
+                          },
+                          {
+                            title: t('orders.delivered'),
+                            desc: currentStatusIndex >= 3 ? t('orders.orderDelivered') : t('orders.waitingDelivery'),
+                            icon: CheckCircle,
+                            completed: currentStatusIndex >= 3,
+                            active: currentStatusIndex === 3,
+                          },
+                        ];
 
-                      {/* Shipped Step */}
-                      <div className="relative">
-                        <div className={`absolute w-8 h-8 -left-[56.5px] flex items-center justify-center rounded-full ring-8 ring-white transition-all duration-300 ${
-                          ['shipped', 'delivered'].includes(order.status) 
-                            ? 'bg-black text-white' 
-                            : 'bg-white border border-gray-200 text-gray-400'
-                        }`}>
-                          <Truck className="h-3.5 w-3.5" />
-                        </div>
-                        <h4 className={`text-sm font-semibold ${['shipped', 'delivered'].includes(order.status) ? 'text-gray-900' : 'text-gray-400'}`}>{t('orders.shipped')}</h4>
-                        <p className={`text-sm mt-1 transition-colors ${['shipped', 'delivered'].includes(order.status) ? 'text-gray-500' : 'text-gray-400'}`}>
-                          {['shipped', 'delivered'].includes(order.status) ? t('orders.onTheWay') : t('orders.waitingShipped')}
-                        </p>
-                      </div>
+                        return (
+                          <div className="relative pl-8">
+                            {/* Vertical Line with Dynamic Progress */}
+                            <div className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-gray-200" />
+                            <div 
+                              className="absolute left-[19px] top-3 w-0.5 bg-brand-600 transition-all duration-500 ease-in-out" 
+                              style={{
+                                height: `${Math.min(100, (currentStatusIndex / (steps.length - 1)) * 100)}%`
+                              }}
+                            />
 
-                      {/* Delivered Step */}
-                      <div className="relative">
-                        <div className={`absolute w-8 h-8 -left-[56.5px] flex items-center justify-center rounded-full ring-8 ring-white transition-all duration-300 ${
-                          order.status === 'delivered' 
-                            ? 'bg-black text-white' 
-                            : 'bg-white border border-gray-200 text-gray-400'
-                        }`}>
-                          <CheckCircle className="h-3.5 w-3.5" />
-                        </div>
-                        <h4 className={`text-sm font-semibold ${order.status === 'delivered' ? 'text-gray-900' : 'text-gray-400'}`}>{t('orders.delivered')}</h4>
-                        <p className={`text-sm mt-1 transition-colors ${order.status === 'delivered' ? 'text-gray-500' : 'text-gray-400'}`}>
-                          {order.status === 'delivered' ? t('orders.orderDelivered') : t('orders.waitingDelivery')}
-                        </p>
-                      </div>
+                            <div className="space-y-8">
+                              {steps.map((step, idx) => {
+                                const IconComponent = step.icon;
+                                let circleStyle = "bg-gray-100 text-gray-400 border border-gray-200 ring-4 ring-white";
+                                let textTitleStyle = "text-gray-400 font-medium";
+                                let textDescStyle = "text-gray-400";
+
+                                if (step.completed) {
+                                  circleStyle = "bg-emerald-500 text-white ring-4 ring-emerald-50 shadow-sm shadow-emerald-500/20";
+                                  textTitleStyle = "text-gray-900 font-semibold";
+                                  textDescStyle = "text-gray-500";
+                                }
+
+                                if (step.active) {
+                                  circleStyle = "bg-brand-600 text-white ring-4 ring-brand-100 shadow-md shadow-brand-500/30";
+                                  textTitleStyle = "text-brand-600 font-bold flex items-center gap-2";
+                                  textDescStyle = "text-gray-700 font-medium";
+                                }
+
+                                return (
+                                  <div key={idx} className="relative flex items-start gap-4">
+                                    <div className={`relative z-10 w-10 h-10 -ml-[32px] flex items-center justify-center rounded-full transition-all duration-300 ${circleStyle}`}>
+                                      <IconComponent className="h-4.5 w-4.5" />
+                                    </div>
+                                    <div className="pt-1">
+                                      <div className={textTitleStyle}>
+                                        <span className="text-sm">{step.title}</span>
+                                        {step.active && (
+                                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-600 border border-brand-200">
+                                            Current Status
+                                          </span>
+                                        )}
+                                      </div>
+                                      <p className={`text-sm mt-0.5 transition-colors ${textDescStyle}`}>
+                                        {step.desc}
+                                      </p>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>

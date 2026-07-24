@@ -29,7 +29,11 @@ export default function SettingsPage() {
   const [passwordSave, setPasswordSave] = useState<SaveState>('idle');
   const [passwordError, setPasswordError] = useState('');
 
-  useEffect(() => { setMounted(true); }, []);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (mounted && !user) router.push('/login');
@@ -265,7 +269,7 @@ export default function SettingsPage() {
                   <button
                     type="submit"
                     disabled={passwordSave === 'loading'}
-                    className="bg-gray-900 text-white font-semibold px-8 py-2.5 rounded-xl hover:bg-gray-700 transition-colors disabled:opacity-60 cursor-pointer text-sm"
+                    className="bg-brand-600 text-white font-semibold px-8 py-2.5 rounded-xl hover:bg-brand-700 transition-colors disabled:opacity-60 cursor-pointer text-sm"
                   >
                     {passwordSave === 'loading' ? 'Updating…' : 'Update Password'}
                   </button>
@@ -279,12 +283,45 @@ export default function SettingsPage() {
             <h2 className="font-semibold text-red-800 mb-1">Danger Zone</h2>
             <p className="text-sm text-red-600 mb-4">Once you delete your account, all your data will be permanently removed. This action cannot be undone.</p>
             <button
+              type="button"
               className="text-sm font-medium text-red-600 border border-red-300 px-5 py-2 rounded-xl hover:bg-red-100 transition-colors cursor-pointer"
-              onClick={() => window.confirm('Are you sure you want to delete your account? This cannot be undone.')}
+              onClick={() => setShowDeleteModal(true)}
             >
               Delete My Account
             </button>
           </div>
+
+          {showDeleteModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-fade-in">
+              <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-gray-100 space-y-4">
+                <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
+                  <AlertCircle className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">Delete Account</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Are you sure you want to delete your account? All of your saved orders, wishlist, and data will be permanently removed. This action cannot be undone.
+                  </p>
+                </div>
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteModal(false)}
+                    className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteModal(false)}
+                    className="px-4 py-2.5 rounded-xl bg-red-600 text-sm font-medium text-white hover:bg-red-700 transition-colors cursor-pointer shadow-sm"
+                  >
+                    Confirm Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

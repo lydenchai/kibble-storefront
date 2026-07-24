@@ -15,18 +15,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Define paths that are ONLY for unauthenticated users (e.g. login, signup)
-  const isAuthPath = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup');
-
-  // If it's an auth path and user IS authenticated, redirect to home or account
-  if (isAuthPath && isAuthenticated) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
   return NextResponse.next();
 }
 
 export const config = {
-  // Apply middleware only to protected and auth routes to optimize performance
-  matcher: ['/account/:path*', '/checkout/:path*', '/login', '/signup'],
+  // Apply middleware only to protected routes
+  matcher: ['/account/:path*', '/checkout/:path*'],
 };

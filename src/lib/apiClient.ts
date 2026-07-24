@@ -1,3 +1,5 @@
+import { useLoadingStore } from "@/store/useLoadingStore";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 export class ApiError extends Error {
@@ -33,22 +35,27 @@ function handleAuthFailure() {
 }
 
 async function fetchWrapper(endpoint: string, options: RequestInit = {}) {
-  const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-  
-  const headers = new Headers(options.headers || {});
-  headers.set("Content-Type", "application/json");
-  headers.set("X-App-Type", "storefront");
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+  if (typeof window !== "undefined") {
+    useLoadingStore.getState().startLoading();
   }
 
-  const config: RequestInit = {
-    ...options,
-    headers,
-    credentials: "include", // Required to send the HttpOnly refresh token cookie
-  };
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    
+    const headers = new Headers(options.headers || {});
+    headers.set("Content-Type", "application/json");
+    headers.set("X-App-Type", "storefront");
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
 
-  let response = await fetch(`${API_URL}${endpoint}`, config);
+    const config: RequestInit = {
+      ...options,
+      headers,
+      credentials: "include", // Required to send the HttpOnly refresh token cookie
+    };
+
+    let response = await fetch(`${API_URL}${endpoint}`, config);
 
   if (response.status === 401) {
     let errorData;
@@ -135,12 +142,17 @@ async function fetchWrapper(endpoint: string, options: RequestInit = {}) {
     throw new ApiError(realMessage, response.status, errorData);
   }
 
-  // Handle 204 No Content
-  if (response.status === 204) {
-    return null;
-  }
+    // Handle 204 No Content
+    if (response.status === 204) {
+      return null;
+    }
 
-  return response.json();
+    return await response.json();
+  } finally {
+    if (typeof window !== "undefined") {
+      useLoadingStore.getState().stopLoading();
+    }
+  }
 }
 
 export const apiClient = {

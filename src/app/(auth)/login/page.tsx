@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { EyeOff, Eye } from "lucide-react";
+import { EyeOff, Eye, AlertCircle, X } from "lucide-react";
 import { loginAction, registerAction } from "@/actions/auth.actions";
 import { useTranslation } from "@/hooks/useTranslation";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,16 +16,25 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showNew, setShowNew] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const login = useAuthStore((state) => state.login);
   const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
     setIsLoading(true);
 
     try {
       if (isLogin) {
         const response = await loginAction({ email, password });
+        if (response.error || response.success === false) {
+          const msg = response.error || "Authentication failed. Please check your credentials.";
+          setErrorMsg(msg);
+          toast.error(msg);
+          return;
+        }
+
         if (response && response.data) {
           const { user, accessToken } = response.data;
           login(user, accessToken);
@@ -32,13 +42,27 @@ export default function LoginPage() {
           const searchParams = new URLSearchParams(window.location.search);
           const redirect = searchParams.get("redirect") || "/";
           router.push(redirect);
+          router.refresh();
         }
       } else {
         // Register first
-        await registerAction({ name, email, password });
+        const regRes = await registerAction({ name, email, password });
+        if (regRes.error || regRes.success === false) {
+          const msg = regRes.error || "Failed to register account.";
+          setErrorMsg(msg);
+          toast.error(msg);
+          return;
+        }
 
         // Then automatically login to get the access token
         const loginResponse = await loginAction({ email, password });
+        if (loginResponse.error || loginResponse.success === false) {
+          const msg = loginResponse.error || "Authentication failed.";
+          setErrorMsg(msg);
+          toast.error(msg);
+          return;
+        }
+
         if (loginResponse && loginResponse.data) {
           const { user, accessToken } = loginResponse.data;
           login(user, accessToken);
@@ -46,21 +70,17 @@ export default function LoginPage() {
           const searchParams = new URLSearchParams(window.location.search);
           const redirect = searchParams.get("redirect") || "/";
           router.push(redirect);
+          router.refresh();
         }
       }
     } catch (error: any) {
       console.error("Authentication failed:", error);
-      let errorMsg = "Authentication failed. Please check your credentials.";
-      if (Array.isArray(error.message)) {
-        errorMsg = error.message
-          .map((err: any) => err.message || JSON.stringify(err))
-          .join("\n");
-      } else if (typeof error.message === "string") {
-        errorMsg = error.message;
-      } else if (error.message && typeof error.message === "object") {
-        errorMsg = JSON.stringify(error.message);
+      let message = "Authentication failed. Please check your credentials.";
+      if (typeof error?.message === "string") {
+        message = error.message;
       }
-      alert(errorMsg);
+      setErrorMsg(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +98,25 @@ export default function LoginPage() {
               ? t('auth.signInDesc')
               : t('auth.joinDesc')}
           </p>
+
+          {errorMsg && (
+            <div className="mt-4 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start justify-between gap-3 text-red-700 text-sm animate-fade-in">
+              <div className="flex items-start gap-2.5">
+                <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-red-800">Authentication Error</p>
+                  <p className="mt-0.5 whitespace-pre-line text-xs">{errorMsg}</p>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setErrorMsg(null)}
+                className="text-red-400 hover:text-red-600 transition-colors p-0.5 cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -197,13 +236,13 @@ export default function LoginPage() {
 
           <div className="mt-6 grid grid-cols-2 gap-3">
             <div>
-              <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer">
+              <button type="button" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer">
                 <span className="sr-only">{t('auth.signInGoogle')}</span>
                 {t('auth.google')}
               </button>
             </div>
             <div>
-              <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer">
+              <button type="button" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer">
                 <span className="sr-only">{t('auth.signInFacebook')}</span>
                 {t('auth.facebook')}
               </button>
@@ -213,8 +252,9 @@ export default function LoginPage() {
 
         <div className="text-center mt-6">
           <button
+            type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="cursor-pointer text-brand-600 hover:text-brand-700 font-medium text-sm cursor-pointer"
+            className="cursor-pointer text-brand-600 hover:text-brand-700 font-medium text-sm"
           >
             {isLogin
               ? t('auth.noAccount')
