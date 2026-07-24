@@ -1,11 +1,17 @@
 import { Variant } from "./variant";
 
+export interface CategoryRef {
+  _id: string;
+  name?: string;
+  slug?: string;
+}
+
 export interface Product {
   _id: string;
   name: string;
   slug: string;
   description: string;
-  category: any; // Ideally this should be a populated Category object or ID
+  category: string | CategoryRef;
   brand: string;
   images: string[];
   variants: Variant[];
@@ -16,4 +22,9 @@ export interface Product {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface OfferProduct extends Product {
+  discountPercentage?: number;
+  savingsAmount?: number;
 }

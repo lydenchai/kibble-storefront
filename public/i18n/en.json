@@ -6,10 +6,12 @@
     "viewAll": "View all"
   },
   "home": {
+    "heroBadge": "🐾 Premium Nutrition & Pet Essentials",
     "heroTitle": "Premium Nutrition for Your Best Friend",
     "heroDesc": "Discover our carefully curated selection of high-quality pet food, treats, and accessories. Because they deserve the best.",
     "shopDog": "Shop Dog",
     "shopCat": "Shop Cat",
+    "categories": "Shop by Category",
     "catDogFood": "Dog Food",
     "catCatFood": "Cat Food",
     "catTreats": "Treats",
@@ -253,5 +255,11 @@
     "items": "Items",
     "qty": "Qty",
     "tracking": "Tracking"
+  },
+  "reviews": {
+    "title": "Customer Reviews & Ratings",
+    "writeReview": "Write a Review",
+    "loginPrompt": "Please log in to share your experience and rate this product.",
+    "noReviews": "No reviews yet. Be the first to rate and comment!"
   }
 }

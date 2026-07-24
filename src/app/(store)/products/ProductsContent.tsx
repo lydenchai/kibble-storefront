@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import ProductFilters from "@/components/product/ProductFilters";
 import { FadeIn } from "@/components/ui/FadeIn";
 import ProductCard from "@/components/ui/ProductCard";
+import CustomSelect from "@/components/ui/CustomSelect";
 import { useTranslation } from "@/hooks/useTranslation";
+import { buildUrlWithParams } from "@/utils/url";
 
 type ProductsContentProps = {
   products: any[];
@@ -24,16 +27,23 @@ export default function ProductsContent({
   limit
 }: ProductsContentProps) {
   const { t } = useTranslation();
+  const router = useRouter();
 
-  // Build a URL with updated ?page=N while preserving other params
+  const currentSort = (resolvedParams?.sort as string) || '-createdAt';
+
+  const sortOptions = [
+    { value: '-createdAt', label: t('products.sortNewest') || 'Newest Arrivals' },
+    { value: 'price', label: t('products.sortPriceAsc') || 'Price: Low to High' },
+    { value: '-price', label: t('products.sortPriceDesc') || 'Price: High to Low' },
+    { value: '-ratingAvg', label: t('products.sortRating') || 'Highest Rated' },
+  ];
+
+  const handleSortChange = (newSort: string) => {
+    router.push(buildUrlWithParams('/products', resolvedParams, { sort: newSort, page: 1 }));
+  };
+
   const buildPageUrl = (targetPage: number) => {
-    const params = new URLSearchParams();
-    Object.entries(resolvedParams).forEach(([key, val]) => {
-      if (key !== 'page' && val) params.set(key, val as string);
-    });
-    params.set('limit', limit);
-    params.set('page', String(targetPage));
-    return `/products?${params.toString()}`;
+    return buildUrlWithParams('/products', resolvedParams, { limit, page: targetPage });
   };
 
   return (
@@ -59,21 +69,13 @@ export default function ProductsContent({
             </div>
             <div className="flex items-center gap-2">
               <label htmlFor="sort" className="text-sm text-gray-600">{t('products.sortBy')}</label>
-              <div className="relative">
-                <select 
-                  id="sort" 
-                  className="appearance-none pl-4 pr-10 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent shadow-sm hover:border-gray-300 transition-colors text-gray-700 cursor-pointer"
-                  defaultValue="-createdAt"
-                >
-                  <option value="-createdAt">{t('products.sortNewest')}</option>
-                  <option value="price">{t('products.sortPriceAsc')}</option>
-                  <option value="-price">{t('products.sortPriceDesc')}</option>
-                  <option value="-ratingAvg">{t('products.sortRating')}</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-400">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                </div>
-              </div>
+              <CustomSelect
+                id="sort"
+                options={sortOptions}
+                value={currentSort}
+                onChange={handleSortChange}
+                ariaLabel="Sort products"
+              />
             </div>
           </div>
 

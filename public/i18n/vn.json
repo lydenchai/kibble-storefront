@@ -6,10 +6,12 @@
     "viewAll": "Xem tất cả"
   },
   "home": {
+    "heroBadge": "🐾 Dinh dưỡng cao cấp & Thiết yếu cho thú cưng",
     "heroTitle": "Dinh dưỡng cao cấp cho người bạn thân nhất của bạn",
     "heroDesc": "Khám phá bộ sưu tập thức ăn, đồ ăn vặt và phụ kiện thú cưng chất lượng cao được tuyển chọn kỹ lưỡng của chúng tôi. Bởi vì chúng xứng đáng nhận được những điều tốt nhất.",
     "shopDog": "Mua cho chó",
     "shopCat": "Mua cho mèo",
+    "categories": "Danh mục sản phẩm",
     "catDogFood": "Thức ăn cho chó",
     "catCatFood": "Thức ăn cho mèo",
     "catTreats": "Đồ ăn vặt",
@@ -250,8 +252,14 @@
     "waitingShipped": "Đang chờ giao hàng",
     "orderDelivered": "Đơn hàng của bạn đã được giao.",
     "waitingDelivery": "Đang chờ giao",
-    "items": "Mặt hàng",
+    "items": "Sản phẩm",
     "qty": "SL",
     "tracking": "Theo dõi"
+  },
+  "reviews": {
+    "title": "Đánh giá & Nhận xét từ khách hàng",
+    "writeReview": "Viết đánh giá",
+    "loginPrompt": "Vui lòng đăng nhập để chia sẻ trải nghiệm và đánh giá sản phẩm này.",
+    "noReviews": "Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá và bình luận!"
   }
 }

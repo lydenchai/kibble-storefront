@@ -1,9 +1,11 @@
 import { Metadata } from 'next';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getProductBySlugAction } from '@/actions/product.actions';
 import ProductActions from '@/components/product/ProductActions';
-import ProductRating from '@/components/product/ProductRating';
+import ProductImageGallery from '@/components/product/ProductImageGallery';
+import LiveProductRating from '@/components/product/LiveProductRating';
+import ProductReviews from '@/components/product/ProductReviews';
+import RelatedProducts from '@/components/product/RelatedProducts';
 import ShareButton from '@/components/product/ShareButton';
 import ClientTranslate from '@/components/ui/ClientTranslate';
 
@@ -68,34 +70,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       />
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
-        {/* Product Images */}
-        <div className="flex flex-col gap-4">
-          <div className="relative aspect-square bg-white rounded-xl border border-gray-100">
-            {product.images?.[0] ? (
-              <Image
-                src={product.images[0]}
-                alt={product.name}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority
-                className="object-contain p-8"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-300">
-                <span className="text-6xl">🐾</span>
-              </div>
-            )}
-          </div>
-          {/* Thumbnails */}
-          {product.images?.length > 1 && (
-            <div className="flex gap-4 overflow-x-auto pb-2">
-              {product.images.map((img, i) => (
-                <button key={i} className={`relative w-20 h-20 flex-shrink-0 bg-gray-50 rounded-lg border cursor-pointer ${i === 0 ? 'border-brand-500' : 'border-gray-200'}`}>
-                  <Image src={img} alt={`${product.name} ${i+1}`} fill className="object-contain p-2" />
-                </button>
-              ))}
-            </div>
-          )}
+        {/* Product Image Gallery */}
+        <div>
+          <ProductImageGallery images={product.images || []} name={product.name} />
         </div>
 
         {/* Product Info */}
@@ -108,7 +85,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
             
             <div className="mb-4">
-              <ProductRating rating={product.ratingAvg || 0} count={product.ratingCount || 0} />
+              <LiveProductRating productId={product._id} initialRating={product.ratingAvg || 0} initialCount={product.ratingCount || 0} />
             </div>
           </div>
           
@@ -134,6 +111,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Ratings & Customer Reviews Section */}
+      <div className='mt-8'><ProductReviews productId={product._id} /></div>
+
+      {/* Related Products Section */}
+      <div className='mt-8'>
+        <RelatedProducts
+          currentProductId={product._id}
+          categorySlug={typeof product.category === 'object' ? product.category?.slug : undefined}
+          petType={product.petType}
+        />
       </div>
     </div>
   );

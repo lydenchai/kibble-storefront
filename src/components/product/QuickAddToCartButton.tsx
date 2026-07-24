@@ -39,10 +39,10 @@ export default function QuickAddToCartButton({ product }: { product: any }) {
   return (
     <button
       onClick={handleAddToCart}
-      className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50 ${
+      className={`p-2 rounded-full flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50 ${
         isAdded
           ? "bg-green-500 text-white"
-          : "bg-brand-400 text-white hover:bg-brand-600"
+          : "bg-brand-50 text-brand-600 hover:bg-brand-600 hover:text-white"
       }`}
       title="Add to Cart"
     >

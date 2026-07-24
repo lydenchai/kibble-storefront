@@ -6,6 +6,7 @@ import Link from "next/link";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { useTranslation } from "@/hooks/useTranslation";
 import ProductCard from "@/components/ui/ProductCard";
+import TestimonialCarousel from "@/components/home/TestimonialCarousel";
 import { Truck, ShieldCheck, RefreshCw, Headset, Star, ArrowRight, Sparkles, CheckCircle2, Heart, Mail } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -133,7 +134,7 @@ export default function HomeContent({ featuredProducts }: { featuredProducts: an
       </section>
 
       {/* Trust & Feature Highlights Bar */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-28 relative z-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {[
             { icon: Truck, title: "Free Express Shipping", desc: "On all orders over $49", color: "text-brand-600 bg-brand-50" },
@@ -222,58 +223,7 @@ export default function HomeContent({ featuredProducts }: { featuredProducts: an
       {/* Pet Parents Reviews / Testimonials */}
       <section className="bg-gray-50/80 py-16 border-y border-gray-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeIn className="text-center max-w-xl mx-auto mb-12">
-            <span className="text-xs text-brand-600 font-bold uppercase tracking-wider">Loved By Thousands</span>
-            <h2 className="text-3xl font-bold text-gray-900 mt-1">What Pet Parents Say</h2>
-          </FadeIn>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Sarah Jenkins",
-                role: "Golden Retriever Owner",
-                comment: "Kibble's organic salmon formula completely transformed my dog's coat and energy levels! Delivery is always right on time.",
-                rating: 5,
-                pet: "Golden Retriever 🐕"
-              },
-              {
-                name: "Marcus Vance",
-                role: "Cat Lover",
-                comment: "My cats are extremely picky eaters, but they devoured the Kibble gourmet wet food instantly. Highly recommend subscription!",
-                rating: 5,
-                pet: "2 Siamese Cats 🐈"
-              },
-              {
-                name: "Emily Watson",
-                role: "French Bulldog Parent",
-                comment: "Customer support is top notch! Helped me pick the hypoallergenic treats for my puppy. 10/10 quality and care.",
-                rating: 5,
-                pet: "Frenchie 🐶"
-              }
-            ].map((review, i) => (
-              <FadeIn key={i} delay={i * 0.15}>
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs flex flex-col justify-between h-full">
-                  <div>
-                    <div className="flex text-amber-400 mb-4">
-                      {[...Array(review.rating)].map((_, idx) => (
-                        <Star key={idx} className="h-4 w-4 fill-amber-400" />
-                      ))}
-                    </div>
-                    <p className="text-gray-700 text-sm leading-relaxed mb-6">"{review.comment}"</p>
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-50">
-                    <div>
-                      <h4 className="font-bold text-gray-900 text-sm">{review.name}</h4>
-                      <p className="text-xs text-gray-500">{review.role}</p>
-                    </div>
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-50 text-brand-700 border border-brand-100">
-                      {review.pet}
-                    </span>
-                  </div>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
+          <TestimonialCarousel />
         </div>
       </section>
 

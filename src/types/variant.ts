@@ -1,5 +1,6 @@
 export interface Variant {
   _id: string;
+  name: string;
   size?: string;
   weight?: string;
   flavor?: string;

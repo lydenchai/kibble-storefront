@@ -8,22 +8,21 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      isCartOpen: false,
+      openCart: () => set({ isCartOpen: true }),
+      closeCart: () => set({ isCartOpen: false }),
       addItem: (product, variant, quantity) => {
         set((state) => {
           const existingItemIndex = state.items.findIndex(
             (item) => item.variant.sku === variant.sku,
           );
 
+          let newItems: CartItem[];
           if (existingItemIndex >= 0) {
-            // Update quantity if item already exists
-            const newItems = [...state.items];
+            newItems = [...state.items];
             newItems[existingItemIndex].quantity += quantity;
-            return { items: newItems };
-          }
-
-          // Add new item
-          return {
-            items: [
+          } else {
+            newItems = [
               ...state.items,
               {
                 id: variant.sku,
@@ -31,8 +30,10 @@ export const useCartStore = create<CartState>()(
                 variant,
                 quantity,
               },
-            ],
-          };
+            ];
+          }
+
+          return { items: newItems };
         });
       },
       removeItem: (id) => {
@@ -59,12 +60,10 @@ export const useCartStore = create<CartState>()(
           0,
         );
       },
-      isCartOpen: false,
-      openCart: () => set({ isCartOpen: true }),
-      closeCart: () => set({ isCartOpen: false }),
     }),
     {
-      name: "kibble-cart-storage", // name of the item in the storage (must be unique)
+      name: "cart-storage",
+      partialize: (state) => ({ items: state.items }), // don't persist isCartOpen
     },
   ),
 );

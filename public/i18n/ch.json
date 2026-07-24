@@ -6,10 +6,12 @@
     "viewAll": "查看全部"
   },
   "home": {
+    "heroBadge": "🐾 优质营养与宠物用品",
     "heroTitle": "为您最好的朋友提供优质营养",
     "heroDesc": "探索我们精心挑选的高品质宠物食品、零食和配件。因为它们值得最好的。",
     "shopDog": "选购狗狗用品",
     "shopCat": "选购猫咪用品",
+    "categories": "按分类选购",
     "catDogFood": "狗粮",
     "catCatFood": "猫粮",
     "catTreats": "零食",
@@ -252,6 +254,12 @@
     "waitingDelivery": "等待送达",
     "items": "商品",
     "qty": "数量",
-    "tracking": "跟踪"
+    "tracking": "物流"
+  },
+  "reviews": {
+    "title": "顾客评价与评分",
+    "writeReview": "撰写评价",
+    "loginPrompt": "请登录以分享您的体验并对此产品进行评分。",
+    "noReviews": "暂无评价。成为第一个评分和评论的顾客吧！"
   }
 }
